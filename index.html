@@ -1,24 +1,278 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LoHi rental tracker</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#20324a;font:15px/1.5 system-ui,sans-serif}header{background:#fff;padding:18px 24px;border-bottom:1px solid #dce3eb;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:24px}p{margin:8px 0}a{color:#2259a4}.muted,small{color:#607087}main{display:grid;grid-template-columns:340px 1fr;height:calc(100dvh - 100px);min-height:560px}aside{overflow:auto;padding:16px;border-right:1px solid #dce3eb}.filters{display:flex;gap:8px;margin-bottom:12px}select,button{font:inherit;border:1px solid #c7d3e0;border-radius:8px;padding:9px;background:white;color:inherit;cursor:pointer}.card{display:block;width:100%;text-align:left;padding:16px;margin-bottom:10px}.card[aria-pressed=true]{border:2px solid #285f98;background:#edf5ff}.card strong{display:block}.card .rent{font-size:20px;margin:5px 0}.split{color:#24634b;font-weight:600}.workspace{min-width:0;overflow:auto;display:flex;flex-direction:column}.mapbar{display:flex;gap:8px;align-items:center;padding:12px 20px;background:#fff;flex-wrap:wrap}.mapbar strong{margin-right:auto}iframe{border:0;width:100%;min-height:310px;flex:1;background:#e5ebed}#details{padding:18px 24px;background:white}h2{margin:0;font-size:21px}.facts{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}.note{padding:10px 13px;border-radius:8px;background:#fff5dc}.links{display:flex;gap:20px;margin:12px 0}small{display:block;font-size:12px}.empty{padding:16px}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #487fc0;outline-offset:2px}@media(max-width:760px){header{padding:14px}h1{font-size:20px}header a{font-size:12px}main{display:block;height:auto}aside{max-height:360px;border-bottom:1px solid #ccd6e2}.workspace{overflow:visible}iframe{height:370px;flex:none}.mapbar{padding:12px}#details{padding:16px}}
-</style></head><body><header><div><h1>LoHi rental tracker</h1><p class="muted">8 homes · 3–4 bedrooms · rent split between 3 people</p></div><a href="https://github.com/declanprewa-cpu/Rental-Tracker-Denver/edit/main/index.html" target="_blank" rel="noopener">Owner: edit tracker ↗</a></header>
-<main><aside><div class="filters"><select id="beds" aria-label="Bedrooms"><option value="all">3–4 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option></select><select id="sort" aria-label="Sort rentals"><option value="price">Lowest cost</option><option value="space">Most space</option></select></div><p id="count" class="muted"></p><div id="cards"></div><small>Checked on Zillow September 29, 2026. LoHi and its northern edge; this is a shortlist, not every available rental.</small></aside><section class="workspace"><nav class="mapbar" aria-label="Map views"><strong id="mapname">Selected home</strong><button id="property">Property</button><button id="neighborhood">Neighborhood</button><button id="city">Denver</button></nav><iframe id="map" title="Selected rental location on OpenStreetMap"></iframe><article id="details" aria-live="polite"></article></section></main>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>LoHi + Commons rental tracker</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""><style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#20324a;font:15px/1.5 system-ui,sans-serif}header{background:#fff;padding:18px 24px;border-bottom:1px solid #dce3eb;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:24px}p{margin:8px 0}a{color:#2259a4}.muted,small{color:#607087}main{display:grid;grid-template-columns:340px 1fr;height:calc(100dvh - 100px);min-height:560px}aside{overflow:auto;padding:16px;border-right:1px solid #dce3eb}.filters{display:flex;gap:8px;margin-bottom:12px}select,button{font:inherit;border:1px solid #c7d3e0;border-radius:8px;padding:9px;background:white;color:inherit;cursor:pointer}.card{display:block;width:100%;text-align:left;padding:16px;margin-bottom:10px}.card[aria-pressed=true]{border:2px solid #285f98;background:#edf5ff}.card strong{display:block}.card .rent{font-size:20px;margin:5px 0}.split{color:#24634b;font-weight:600}.workspace{min-width:0;overflow:auto;display:flex;flex-direction:column}.mapbar{display:flex;gap:8px;align-items:center;padding:12px 20px;background:#fff;flex-wrap:wrap}.mapbar strong{margin-right:auto}#map{width:100%;height:420px;min-height:340px;flex-shrink:0;background:#e5ebed;z-index:0}.price-pin{background:#fff;border:2px solid #285f98;border-radius:20px;padding:4px 8px;font:600 12px system-ui;color:#183d65;width:max-content!important;height:auto!important;box-shadow:0 2px 6px #0003}.price-pin.active{background:#183d65;color:white}.filters{flex-wrap:wrap}.badge{color:#805611;font-size:12px}.leaflet-tooltip{font-family:system-ui}.mapnotice{padding:8px 20px;background:white;font-size:12px;color:#607087}#details{padding:18px 24px;background:white}h2{margin:0;font-size:21px}.facts{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}.note{padding:10px 13px;border-radius:8px;background:#fff5dc}.links{display:flex;gap:20px;margin:12px 0}small{display:block;font-size:12px}.empty{padding:16px}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #487fc0;outline-offset:2px}@media(max-width:760px){header{padding:14px}h1{font-size:20px}header a{font-size:12px}main{display:block;height:auto}aside{max-height:360px;border-bottom:1px solid #ccd6e2}.workspace{overflow:visible}#map{height:370px;flex:none}.mapbar{padding:12px}#details{padding:16px}}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}td,th{text-align:left;padding:7px;border-bottom:1px solid #dce3eb}.unit-table{overflow:auto}.links{flex-wrap:wrap}</style></head><body><header><div><h1>LoHi + Commons rentals</h1><p class="muted">3–4 bedrooms · 2+ baths · up to $1,500 each / 3 people</p></div><a href="https://github.com/declanprewa-cpu/Rental-Tracker-Denver/edit/main/index.html" target="_blank" rel="noopener">Owner: edit tracker ↗</a></header>
+<main><aside><div class="filters"><select id="beds" aria-label="Bedrooms"><option value="all">3–4 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option></select><select id="sort" aria-label="Sort rentals"><option value="fit">LoHi / Commons first</option><option value="price">Lowest cost</option><option value="space">Most space</option></select><select id="type" aria-label="Property type"><option value="all">All home types</option><option value="apartments">Apartments / condos</option></select></div><p id="count" class="muted"></p><div id="cards"></div><small>Checked on Zillow September 29, 2026. Known monthly costs capped at $4,500. Utilities and optional parking/pets can be extra. Condition and walking routes need confirmation on a tour.</small></aside><section class="workspace"><nav class="mapbar" aria-label="Map views"><strong id="mapname">Selected home</strong><button id="property">Property</button><button id="neighborhood">Show all</button><button id="city">Denver</button></nav><div id="map" role="region" aria-label="Map of all matching rentals"></div><div class="mapnotice">All matching properties stay on the map. Click a price pin for details. Pins show cost per person. <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a></div><article id="details" aria-live="polite"></article></section></main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const homes=[
-{id:'navajo5',address:'3444 Navajo St, Unit 5',beds:3,baths:2.5,sqft:1952,rent:3950,total:3950,pricing:'Zillow total monthly price',type:'Townhome',available:'Oct 15, 2026',parking:'2-car attached garage',note:'Bedroom caveat: description says 2 full bedrooms plus an office / optional bedroom. Confirm suitability for three roommates.',extras:'Utilities extra; pets negotiable. Minimum 12-month lease.',lat:39.764981524099,lon:-105.0040600894,url:'https://www.zillow.com/homedetails/3444-Navajo-St-UNIT-5-Denver-CO-80211/2092264306_zpid/'},
-{id:'32nd2',address:'2324 W 32nd Ave, Unit 2',beds:3,baths:1,sqft:1200,rent:2350,total:2460,pricing:'Base rent + $110 mandatory monthly utilities',type:'Apartment',available:'Now',parking:'1 rear parking space included',note:'$2,350 base rent plus $110/month for water, sewer, trash and gas. Three-way cost shown includes this charge. Six weeks free advertised; concession terms need confirmation.',extras:'In-unit laundry. Pets allowed; optional $35 monthly pet rent and $300 pet deposit. Security deposit $2,350.',lat:39.761965816871,lon:-105.014849238117,url:'https://www.zillow.com/apartments/denver-co/32nd-ave/5YDFC8/'},
-{id:'quivas',address:'3555 Quivas St',beds:4,baths:1,sqft:2024,rent:3106,total:3106,pricing:'Zillow advertised base rent; see discrepancy below',type:'Main and upper floors',available:'Now',parking:'Optional garage: $94.85/month',note:'Only one bathroom. Listing headline shows $3,106; description says $3,105.15 (or $3,200 with garage). Confirm exact rent. Rental is the main and upper floors, with a shared backyard.',extras:'Water, trash, sewer, gas and electricity included; internet extra. October rent concession advertised with conditions. Pets allowed.',lat:39.766300386652,lon:-105.008094798997,url:'https://www.zillow.com/apartments/denver-co/3555-quivas-st/CkN4Hr/'},
-{id:'38th',address:'1490 W 38th Ave',beds:4,baths:3,sqft:2000,rent:3750,total:3750,pricing:'Zillow total monthly price',type:'Townhome · northern edge',available:'Oct 1, 2026',parking:'Attached garage',note:'Description still says under construction and photos taken during construction. Confirm completion and move-in readiness.',extras:'In-unit laundry and central air. Pets negotiable. $3,000 deposit; one-year minimum. Description says no application or pet fees.',lat:39.769227681295,lon:-105.003980289749,url:'https://www.zillow.com/homedetails/1490-W-38th-Ave-Denver-CO-80211/460195148_zpid/'},
-{id:'jason',address:'3724 Jason St',beds:3,baths:4,sqft:2458,rent:4200,total:4200,pricing:'Zillow total monthly price',type:'House · northern LoHi area',available:'Oct 5, 2026',parking:'2-car garage; attachment details conflict',note:'Description has 3 full + 2 half baths and a detached garage; Zillow facts differ. One bedroom is in the basement. Confirm layout and parking.',extras:'Roof deck, loft study and in-unit laundry. Trash/lawn service included; other utilities extra. Cats and small dogs allowed. One-year minimum.',lat:39.768354879637,lon:-104.999335117591,url:'https://www.zillow.com/homedetails/3724-Jason-St-Denver-CO-80211/131678225_zpid/'},
-{id:'31st',address:'2116 W 31st Ave',beds:3,baths:3,sqft:1649,rent:4400,total:4400,pricing:'Zillow total monthly price',type:'Apartment / condo',available:'Nov 1, 2026; possibly sooner',parking:'3 spaces: 2 covered + driveway',note:'First month, last month and security deposit required at signing. Confirm the advertised special offer and exact upfront amount.',extras:'In-unit laundry and central air. Water, trash and recycling included; gas/electric and internet extra. Small pets considered with additional costs.',lat:39.760751506476,lon:-105.011961526488,url:'https://www.zillow.com/homedetails/2116-W-31st-Ave-Denver-CO-80211/13309252_zpid/'},
-{id:'navajo7',address:'3444 Navajo St, Unit 7',beds:3,baths:3.5,sqft:2350,rent:4595,total:4595,pricing:'Advertised rent; additional required fees may apply',type:'Townhome',available:'Now',parking:'2-car attached heated garage',note:'Each bedroom is described as having its own en-suite bathroom. Additional fees are not fully specified on Zillow.',extras:'End unit with rooftop deck, wet bar, in-unit laundry and central air. Pets allowed; 12-month lease.',lat:39.764981524099,lon:-105.0040600894,url:'https://www.zillow.com/homedetails/3444-Navajo-St-7-Denver-CO-80211/444224488_zpid/'},
-{id:'35th',address:'1225 W 35th Ave',beds:3,baths:4,sqft:3027,rent:5995,total:5995,pricing:'Zillow total monthly price',type:'Townhome',available:'Nov 1, 2026',parking:'Oversized 2-car detached garage',note:'Tenant pays all utilities, yard maintenance and rooftop hot-tub maintenance. Confirm whether furnished: Zillow facts and description are not clear.',extras:'Three bedrooms on the second floor, rooftop hot tub, flex space, in-unit laundry and central air. Cats/small dogs considered. 12 months preferred; 6–12 months considered.',lat:39.765695645116,lon:-105.001289797941,url:'https://www.zillow.com/homedetails/1225-W-35th-Ave-Denver-CO-80211/123599872_zpid/'}
+  {
+    "id": "commons",
+    "address": "Commons Park West",
+    "mapAddress": "1550 Platte St",
+    "area": "Platte Street / Commons Park",
+    "rank": 1,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1385,
+    "rent": 3312,
+    "total": 3312,
+    "pricing": "From $3,312 total monthly; 6 qualifying units",
+    "type": "Apartment community",
+    "available": "Now through Oct 13; see units",
+    "parking": "Garage / covered parking; confirm charges",
+    "condition": "Model photos show white cabinets and updated finishes; verify actual unit renovation",
+    "note": "Zillow estimates 6 minutes walking to Little Man Ice Cream and 10 minutes to Avanti. Six 3-bed / 2-bath units listed; prices below include Zillow fixed required monthly fees. Advertised free-rent offer not deducted.",
+    "extras": "Pool, fitness center and in-unit laundry. Utilities and optional parking/pets can cost extra. Choose and tour the specific unit; model photos may be virtually staged.",
+    "lat": 39.756895374708,
+    "lon": -105.008622939326,
+    "url": "https://www.zillow.com/apartments/denver-co/commons-park-west/5XhvYj/",
+    "units": [
+      [
+        "B311",
+        1385,
+        "Oct 13",
+        3312
+      ],
+      [
+        "B119",
+        1390,
+        "Now",
+        3441
+      ],
+      [
+        "A223",
+        1390,
+        "Oct 7",
+        3642
+      ],
+      [
+        "B319",
+        1390,
+        "Now",
+        3652
+      ],
+      [
+        "B419",
+        1390,
+        "Oct 2",
+        3662
+      ],
+      [
+        "A233",
+        1442,
+        "Oct 6",
+        3772
+      ]
+    ]
+  },
+  {
+    "id": "metro",
+    "address": "The Metro",
+    "mapAddress": "2121 Delgany St",
+    "area": "Across the river / near Commons Park",
+    "rank": 4,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1560,
+    "rent": 2987,
+    "total": 2987,
+    "pricing": "From $2,987 total monthly; 7 qualifying units",
+    "type": "Apartment community",
+    "available": "Now through Oct 8; see units",
+    "parking": "Covered garage; confirm charges",
+    "condition": "Listing advertises renovated interiors and stainless steel appliances; verify specific unit",
+    "note": "Zillow estimates 12 minutes walking to Avanti and 13 minutes to Commons Park. Across-the-river option, not central LoHi. Walk the route yourself to check comfort. Free-rent concession not deducted.",
+    "extras": "Pool, hot tub, fitness center and in-unit laundry. Prices include fixed mandatory monthly fees; usage-based utilities and optional charges are extra.",
+    "lat": 39.757514589845,
+    "lon": -104.997287088734,
+    "url": "https://www.zillow.com/apartments/denver-co/the-metro/5Xhvct/",
+    "units": [
+      [
+        "3-3141",
+        1560,
+        "Oct 5",
+        2987
+      ],
+      [
+        "3-3241",
+        1560,
+        "Oct 8",
+        2997
+      ],
+      [
+        "1-1111",
+        1588,
+        "Now",
+        3355
+      ],
+      [
+        "3-3157",
+        1588,
+        "Now",
+        3524
+      ],
+      [
+        "3-3159",
+        1588,
+        "Now",
+        3524
+      ],
+      [
+        "2-2315",
+        1588,
+        "Now",
+        3547
+      ],
+      [
+        "2-2415",
+        1588,
+        "Now",
+        3570
+      ]
+    ]
+  },
+  {
+    "id": "griffis",
+    "address": "Griffis North Union, Unit 422",
+    "mapAddress": "2975 N Huron St",
+    "area": "Across the river / North Union",
+    "rank": 5,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 1589,
+    "rent": 3664,
+    "total": 3664,
+    "pricing": "$3,664 base rent; required fees still unconfirmed",
+    "type": "Apartment",
+    "available": "Nov 7",
+    "parking": "Controlled-access garage; confirm charges",
+    "condition": "Listing describes modern interiors, granite countertops and stainless appliances",
+    "note": "Budget is provisional: $836/month remains before the $4,500 cap, but required fees need a quote. Zillow estimates 14 minutes walking to Avanti and 15 minutes to Root Down; test the route yourself.",
+    "extras": "Central air, in-unit laundry, pool, hot tub and fitness center. Pets allowed with restrictions. Advertised concessions not deducted. Exact-unit finishes need confirmation.",
+    "lat": 39.759525641141,
+    "lon": -104.997222695582,
+    "url": "https://www.zillow.com/apartments/denver-co/griffis-north-union/CmPcGz/"
+  },
+  {
+    "id": "shoshone",
+    "address": "3209 Shoshone St",
+    "mapAddress": "3209 Shoshone St",
+    "area": "Central LoHi",
+    "rank": 3,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 1982,
+    "rent": 4500,
+    "total": 4500,
+    "pricing": "Zillow total monthly price; utilities extra",
+    "type": "Townhome",
+    "available": "Now",
+    "parking": "2-car attached garage",
+    "condition": "Listing describes high-quality finishes, large windows and rooftop patio",
+    "note": "At the full $1,500/person cap before gas, electricity and internet. Description calls the third room a conforming bedroom or study/flex space; verify its layout before committing.",
+    "extras": "Two larger bedrooms have attached baths; half bath on second floor. In-unit laundry and central air. Water/sewer, landscaping and snow removal included. Pets case by case.",
+    "lat": 39.762191788509,
+    "lon": -105.009679544991,
+    "url": "https://www.zillow.com/homedetails/3209-Shoshone-St-Denver-CO-80211/88905528_zpid/"
+  },
+  {
+    "id": "navajo5",
+    "address": "3444 Navajo St, Unit 5",
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 1952,
+    "rent": 3950,
+    "total": 3950,
+    "pricing": "Zillow total monthly price",
+    "type": "Townhome",
+    "available": "Oct 15, 2026",
+    "parking": "2-car attached garage",
+    "note": "Bedroom caveat: description says 2 full bedrooms plus an office / optional bedroom. Confirm suitability for three roommates.",
+    "extras": "Utilities extra; pets negotiable. Minimum 12-month lease.",
+    "lat": 39.764981524099,
+    "lon": -105.0040600894,
+    "url": "https://www.zillow.com/homedetails/3444-Navajo-St-UNIT-5-Denver-CO-80211/2092264306_zpid/",
+    "rank": 6,
+    "area": "Northern LoHi",
+    "condition": "Modern finishes; third bedroom needs confirmation"
+  },
+  {
+    "id": "38th",
+    "address": "1490 W 38th Ave",
+    "beds": 4,
+    "baths": 3,
+    "sqft": 2000,
+    "rent": 3750,
+    "total": 3750,
+    "pricing": "Zillow total monthly price",
+    "type": "Townhome · northern edge",
+    "available": "Oct 1, 2026",
+    "parking": "Attached garage",
+    "note": "Description still says under construction and photos taken during construction. Confirm completion and move-in readiness.",
+    "extras": "In-unit laundry and central air. Pets negotiable. $3,000 deposit; one-year minimum. Description says no application or pet fees.",
+    "lat": 39.769227681295,
+    "lon": -105.003980289749,
+    "url": "https://www.zillow.com/homedetails/1490-W-38th-Ave-Denver-CO-80211/460195148_zpid/",
+    "rank": 8,
+    "area": "Northern LoHi",
+    "condition": "New construction; completion needs confirmation"
+  },
+  {
+    "id": "jason",
+    "address": "3724 Jason St",
+    "beds": 3,
+    "baths": 4,
+    "sqft": 2458,
+    "rent": 4200,
+    "total": 4200,
+    "pricing": "Zillow total monthly price",
+    "type": "House · northern LoHi area",
+    "available": "Oct 5, 2026",
+    "parking": "2-car garage; attachment details conflict",
+    "note": "Description has 3 full + 2 half baths and a detached garage; Zillow facts differ. One bedroom is in the basement. Confirm layout and parking.",
+    "extras": "Roof deck, loft study and in-unit laundry. Trash/lawn service included; other utilities extra. Cats and small dogs allowed. One-year minimum.",
+    "lat": 39.768354879637,
+    "lon": -104.999335117591,
+    "url": "https://www.zillow.com/homedetails/3724-Jason-St-Denver-CO-80211/131678225_zpid/",
+    "rank": 8,
+    "area": "Northern LoHi",
+    "condition": "Interior condition not independently checked"
+  },
+  {
+    "id": "31st",
+    "address": "2116 W 31st Ave",
+    "beds": 3,
+    "baths": 3,
+    "sqft": 1649,
+    "rent": 4400,
+    "total": 4400,
+    "pricing": "Zillow total monthly price",
+    "type": "Apartment / condo",
+    "available": "Nov 1, 2026; possibly sooner",
+    "parking": "3 spaces: 2 covered + driveway",
+    "note": "First month, last month and security deposit required at signing. Confirm the advertised special offer and exact upfront amount.",
+    "extras": "In-unit laundry and central air. Water, trash and recycling included; gas/electric and internet extra. Small pets considered with additional costs.",
+    "lat": 39.760751506476,
+    "lon": -105.011961526488,
+    "url": "https://www.zillow.com/homedetails/2116-W-31st-Ave-Denver-CO-80211/13309252_zpid/",
+    "rank": 2,
+    "area": "Central LoHi",
+    "condition": "Listing says interior updated August 2024"
+  }
 ];
 const $=id=>document.getElementById(id),money=n=>n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
 let selected=homes.find(h=>h.id===location.hash.slice(1))||homes[0];
-function showMap(scale=.012){const {lat,lon}=selected;const q=new URLSearchParams({bbox:[lon-scale,lat-scale*.65,lon+scale,lat+scale*.65].join(','),layer:'mapnik',marker:[lat,lon].join(',')});$('map').src='https://www.openstreetmap.org/export/embed.html?'+q;$('map').title='Approximate location of '+selected.address;}
-function renderCards(){const list=homes.filter(h=>$('beds').value==='all'||h.beds===Number($('beds').value)).sort((a,b)=>$('sort').value==='space'?b.sqft-a.sqft:a.total-b.total);$('count').textContent=list.length+' matching homes';$('cards').replaceChildren();for(const h of list){const b=document.createElement('button');b.className='card';b.setAttribute('aria-pressed',String(h.id===selected.id));b.innerHTML='<strong>'+h.address+'</strong><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span><strong class="rent">'+money(h.total)+' / mo</strong><span class="split">'+money(h.total/3)+' per person</span><small>'+h.pricing+'</small>';b.onclick=()=>select(h);$('cards').append(b);}}
-function select(h){selected=h;history.replaceState(null,'','#'+h.id);$('mapname').textContent=h.address;$('details').innerHTML='<h2>'+h.address+'</h2><p class="muted">'+h.type+' · Denver, CO 80211</p><div class="facts"><strong>'+money(h.total)+' / month</strong><strong class="split">'+money(h.total/3)+' each / 3 people</strong><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span></div><p><strong>Available:</strong> '+h.available+' · <strong>Parking:</strong> '+h.parking+'</p><p class="note">'+h.note+'</p><p>'+h.extras+'</p><div class="links"><a target="_blank" rel="noopener" href="'+h.url+'">Zillow listing & photos ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(h.address+', Denver, CO 80211')+'">Directions ↗</a></div><small>Checked September 29, 2026. Costs exclude optional fees and any utilities not explicitly included; concessions are not deducted. Listings are updated manually. Map marks an approximate street address from the U.S. Census Geocoder, not a unit entrance.</small>';showMap();renderCards();}
-$('beds').onchange=renderCards;$('sort').onchange=renderCards;$('property').onclick=()=>showMap(.003);$('neighborhood').onclick=()=>showMap(.012);$('city').onclick=()=>showMap(.10);select(selected);
+let map=null;const markers=new Map();
+if(window.L){map=L.map('map',{scrollWheelZoom:false}).setView([39.7608,-105.008],14);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);}else{$('map').textContent='Map could not load. Property details and Directions links remain available.';}
+function filtered(){return homes.filter(h=>h.total<=4500&&h.baths>1&&h.beds>=3&&h.beds<=4&&($('beds').value==='all'||h.beds===Number($('beds').value))&&($('type').value==='all'||/apartment|condo/i.test(h.type)));}
+function drawMarkers(){if(!map)return;for(const m of markers.values())map.removeLayer(m);markers.clear();for(const h of filtered()){const m=L.marker([h.lat,h.lon],{title:h.address,icon:L.divIcon({className:'price-pin'+(h.id===selected.id?' active':''),html:money(h.total/3),iconAnchor:[30,16]})}).addTo(map).bindTooltip(h.address);m.on('click',()=>select(h));markers.set(h.id,m);}}
+function fitAll(){if(map&&markers.size)map.fitBounds(L.featureGroup([...markers.values()]).getBounds().pad(.18),{maxZoom:15});}
+
+function showMap(scale){if(map&&scale)map.setView([selected.lat,selected.lon],scale===.003?17:13);}
+function renderCards(){const list=filtered().sort((a,b)=>$('sort').value==='space'?b.sqft-a.sqft:$('sort').value==='fit'?(a.rank||9)-(b.rank||9):a.total-b.total);$('count').textContent=list.length+' matching homes';$('cards').replaceChildren();for(const h of list){const b=document.createElement('button');b.className='card';b.setAttribute('aria-pressed',String(h.id===selected.id));b.innerHTML='<strong>'+h.address+'</strong><small>'+h.area+'</small><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span><strong class="rent">'+money(h.total)+' / mo</strong><span class="split">'+money(h.total/3)+' per person</span><small>'+h.pricing+'</small>';b.onclick=()=>select(h);$('cards').append(b);}if(!list.length){$('cards').textContent='No homes match these filters.';}drawMarkers();}
+function unitTable(h){return h.units?'<div class="unit-table"><table><caption>Available 3-bedroom / 2-bath units (2026 dates)</caption><thead><tr><th>Unit</th><th>Sq ft</th><th>Available</th><th>Total / mo</th><th>Per person</th></tr></thead><tbody>'+h.units.map(u=>'<tr><td>'+u[0]+'</td><td>'+u[1]+'</td><td>'+u[2]+'</td><td>'+money(u[3])+'</td><td>'+money(u[3]/3)+'</td></tr>').join('')+'</tbody></table></div>':'';}
+function select(h){selected=h;history.replaceState(null,'','#'+h.id);$('mapname').textContent=h.address;$('details').innerHTML='<h2>'+h.address+'</h2><p class="muted">'+h.type+' · '+h.area+'</p><div class="facts"><strong>'+money(h.total)+' / month</strong><strong class="split">'+money(h.total/3)+' each / 3 people</strong><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span></div><p><strong>Available:</strong> '+h.available+' · <strong>Parking:</strong> '+h.parking+'</p><p class="note">'+h.condition+'. '+h.note+'</p><p>'+h.extras+'</p>'+unitTable(h)+'<div class="links"><a target="_blank" rel="noopener" href="'+h.url+'">Zillow listing & photos ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'">Directions ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'&destination=Little+Man+Ice+Cream+2620+16th+St+Denver&travelmode=walking">Walk to central LoHi ↗</a></div><small>Checked September 29, 2026. Costs exclude optional fees and any utilities not explicitly included; concessions are not deducted. Listings are updated manually. Map marks an approximate street address from the U.S. Census Geocoder, not a unit entrance.</small>';showMap();renderCards();}
+function refilter(){const list=filtered();if(list.length&&!list.some(h=>h.id===selected.id))select(list[0]);else renderCards();if(!list.length)$('details').textContent='No matching homes. Try another filter.';fitAll();} $('beds').onchange=refilter;$('type').onchange=refilter;$('sort').onchange=renderCards;$('property').onclick=()=>showMap(.003);$('neighborhood').onclick=fitAll;$('city').onclick=()=>showMap(.10);select(selected);fitAll();
 </script></body></html>
 
