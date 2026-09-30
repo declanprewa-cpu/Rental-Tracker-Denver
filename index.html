@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>LoHi + Commons rental tracker</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""><style>
 *{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#20324a;font:15px/1.5 system-ui,sans-serif}header{background:#fff;padding:18px 24px;border-bottom:1px solid #dce3eb;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:24px}p{margin:8px 0}a{color:#2259a4}.muted,small{color:#607087}main{display:grid;grid-template-columns:340px 1fr;height:calc(100dvh - 100px);min-height:560px}aside{overflow:auto;padding:16px;border-right:1px solid #dce3eb}.filters{display:flex;gap:8px;margin-bottom:12px}select,button{font:inherit;border:1px solid #c7d3e0;border-radius:8px;padding:9px;background:white;color:inherit;cursor:pointer}.card{display:block;width:100%;text-align:left;padding:16px;margin-bottom:10px}.card[aria-pressed=true]{border:2px solid #285f98;background:#edf5ff}.card strong{display:block}.card .rent{font-size:20px;margin:5px 0}.split{color:#24634b;font-weight:600}.workspace{min-width:0;overflow:auto;display:flex;flex-direction:column}.mapbar{display:flex;gap:8px;align-items:center;padding:12px 20px;background:#fff;flex-wrap:wrap}.mapbar strong{margin-right:auto}#map{width:100%;height:420px;min-height:340px;flex-shrink:0;background:#e5ebed;z-index:0}.price-pin{background:#fff;border:2px solid #285f98;border-radius:20px;padding:4px 8px;font:600 12px system-ui;color:#183d65;width:max-content!important;height:auto!important;box-shadow:0 2px 6px #0003}.price-pin.active{background:#183d65;color:white}.filters{flex-wrap:wrap}.badge{color:#805611;font-size:12px}.leaflet-tooltip{font-family:system-ui}.mapnotice{padding:8px 20px;background:white;font-size:12px;color:#607087}#details{padding:18px 24px;background:white}h2{margin:0;font-size:21px}.facts{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0}.note{padding:10px 13px;border-radius:8px;background:#fff5dc}.links{display:flex;gap:20px;margin:12px 0}small{display:block;font-size:12px}.empty{padding:16px}button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid #487fc0;outline-offset:2px}@media(max-width:760px){header{padding:14px}h1{font-size:20px}header a{font-size:12px}main{display:block;height:auto}aside{max-height:360px;border-bottom:1px solid #ccd6e2}.workspace{overflow:visible}#map{height:370px;flex:none}.mapbar{padding:12px}#details{padding:16px}}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}td,th{text-align:left;padding:7px;border-bottom:1px solid #dce3eb}.unit-table{overflow:auto}.links{flex-wrap:wrap}</style></head><body><header><div><h1>LoHi + Commons rentals</h1><p class="muted">3–4 bedrooms · 2+ baths · up to $1,500 each / 3 people</p></div><a href="https://github.com/declanprewa-cpu/Rental-Tracker-Denver/edit/main/index.html" target="_blank" rel="noopener">Owner: edit tracker ↗</a></header>
-<main><aside><div class="filters"><select id="beds" aria-label="Bedrooms"><option value="all">3–4 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option></select><select id="sort" aria-label="Sort rentals"><option value="fit">LoHi / Commons first</option><option value="price">Lowest cost</option><option value="space">Most space</option></select><select id="type" aria-label="Property type"><option value="all">All home types</option><option value="apartments">Apartments / condos</option></select></div><p id="count" class="muted"></p><div id="cards"></div><small>Checked on Zillow September 29, 2026. Known monthly costs capped at $4,500. Utilities and optional parking/pets can be extra. Condition and walking routes need confirmation on a tour.</small></aside><section class="workspace"><nav class="mapbar" aria-label="Map views"><strong id="mapname">Selected home</strong><button id="property">Property</button><button id="neighborhood">Show all</button><button id="city">Denver</button></nav><div id="map" role="region" aria-label="Map of all matching rentals"></div><div class="mapnotice">All matching properties stay on the map. Click a price pin for details. Pins show cost per person. <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a></div><article id="details" aria-live="polite"></article></section></main>
+<main><aside><div class="filters"><select id="beds" aria-label="Bedrooms"><option value="all">3–4 bedrooms</option><option value="3">3 bedrooms</option><option value="4">4 bedrooms</option></select><select id="sort" aria-label="Sort rentals"><option value="fit">LoHi / Commons first</option><option value="price">Lowest cost</option><option value="space">Most space</option></select><select id="type" aria-label="Property type"><option value="all">All home types</option><option value="apartments">Apartments / condos</option><option value="townhomes">Townhomes</option></select></div><p id="count" class="muted"></p><div id="cards"></div><small>Listings checked September 29, 2026; sources linked in each property. Known monthly costs capped at $4,500. Utilities and optional parking/pets can be extra. Condition and walking routes need confirmation on a tour.</small></aside><section class="workspace"><nav class="mapbar" aria-label="Map views"><strong id="mapname">Selected home</strong><button id="property">Property</button><button id="neighborhood">Show all</button><button id="city">Denver</button></nav><div id="map" role="region" aria-label="Map of all matching rentals"></div><div class="mapnotice">All matching properties stay on the map. Click a price pin for details. Pins show cost per person. <a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noopener">Report a map issue</a></div><article id="details" aria-live="polite"></article></section></main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const homes=[
@@ -259,20 +259,66 @@ const homes=[
     "rank": 2,
     "area": "Central LoHi",
     "condition": "Listing says interior updated August 2024"
+  },
+  {
+    "id": "quivas3520",
+    "address": "3520 Quivas St",
+    "area": "LoHi / W 35th Avenue",
+    "rank": 3,
+    "beds": 3,
+    "baths": 3.5,
+    "sqft": 1807,
+    "rent": 4090,
+    "total": 4290,
+    "pricing": "$4,090 advertised + $200 required utilities; package terms need confirmation",
+    "type": "Townhome",
+    "available": "Listed available now; confirm move-in date",
+    "parking": "Two-car garage",
+    "condition": "Listing describes new hardwood, granite and stainless appliances; condition not independently inspected",
+    "note": "$4,090 advertised price says base resident package included; add $200/month water, sewer and trash. Package wording conflicts ($16 or $30): confirm total before applying. At $4,290, split is $1,430 each. LoHi address near W 35th; check the linked walking route for your preferred destinations.",
+    "extras": "Fenced yard, patio, deck and gas fireplace. Washer/dryer hookups only; verify appliances. Gas/electric extra; optional pet costs and one-time lease fee/deposit excluded.",
+    "lat": 39.765917899391,
+    "lon": -105.007947302925,
+    "url": "https://www.redfin.com/CO/Denver/3520-Quivas-St-80211/home/49770491",
+    "sourceName": "Redfin",
+    "checked": "2026-09-29"
+  },
+  {
+    "id": "navajo3607",
+    "address": "3607 Navajo St",
+    "area": "North LoHi / Navajo Street",
+    "rank": 6,
+    "beds": 3,
+    "baths": 3,
+    "sqft": 1939,
+    "rent": 4475,
+    "total": 4475,
+    "pricing": "$4,475 total monthly including $25 admin; variable utilities extra",
+    "type": "Townhome",
+    "available": "Active listing; contact manager for date",
+    "parking": "Attached two-car garage",
+    "condition": "Listing describes open kitchen, primary five-piece bath and rooftop terrace; inspect interior condition",
+    "note": "Entry-level third bedroom is described as bedroom/office: verify it works as a proper bedroom. Only $25 below the $4,500 cap before variable trash/utilities. Listing places Highland Tavern, Acova and Black Eye Coffee within 1–2 blocks; check the linked route to central LoHi.",
+    "extras": "Grace Property Management listing. $25 monthly lease admin included. Variable trash and utilities extra. $500 one-time admin, $50 application and advertised $4,475 deposit; confirm final terms.",
+    "lat": 39.766966648986,
+    "lon": -105.004206028761,
+    "url": "https://www.apartments.com/3607-navajo-st-denver-co/p4wj3jv/",
+    "sourceName": "Apartments.com",
+    "checked": "2026-09-29"
   }
 ];
 const $=id=>document.getElementById(id),money=n=>n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
 let selected=homes.find(h=>h.id===location.hash.slice(1))||homes[0];
 let map=null;const markers=new Map();
 if(window.L){map=L.map('map',{scrollWheelZoom:false}).setView([39.7608,-105.008],14);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);}else{$('map').textContent='Map could not load. Property details and Directions links remain available.';}
-function filtered(){return homes.filter(h=>h.total<=4500&&h.baths>1&&h.beds>=3&&h.beds<=4&&($('beds').value==='all'||h.beds===Number($('beds').value))&&($('type').value==='all'||/apartment|condo/i.test(h.type)));}
+function filtered(){return homes.filter(h=>h.total<=4500&&h.baths>1&&h.beds>=3&&h.beds<=4&&($('beds').value==='all'||h.beds===Number($('beds').value))&&($('type').value==='all'||($('type').value==='townhomes'?/town/i.test(h.type):/apartment|condo/i.test(h.type))));}
 function drawMarkers(){if(!map)return;for(const m of markers.values())map.removeLayer(m);markers.clear();for(const h of filtered()){const m=L.marker([h.lat,h.lon],{title:h.address,icon:L.divIcon({className:'price-pin'+(h.id===selected.id?' active':''),html:money(h.total/3),iconAnchor:[30,16]})}).addTo(map).bindTooltip(h.address);m.on('click',()=>select(h));markers.set(h.id,m);}}
 function fitAll(){if(map&&markers.size)map.fitBounds(L.featureGroup([...markers.values()]).getBounds().pad(.18),{maxZoom:15});}
 
 function showMap(scale){if(map&&scale)map.setView([selected.lat,selected.lon],scale===.003?17:13);}
 function renderCards(){const list=filtered().sort((a,b)=>$('sort').value==='space'?b.sqft-a.sqft:$('sort').value==='fit'?(a.rank||9)-(b.rank||9):a.total-b.total);$('count').textContent=list.length+' matching homes';$('cards').replaceChildren();for(const h of list){const b=document.createElement('button');b.className='card';b.setAttribute('aria-pressed',String(h.id===selected.id));b.innerHTML='<strong>'+h.address+'</strong><small>'+h.area+'</small><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span><strong class="rent">'+money(h.total)+' / mo</strong><span class="split">'+money(h.total/3)+' per person</span><small>'+h.pricing+'</small>';b.onclick=()=>select(h);$('cards').append(b);}if(!list.length){$('cards').textContent='No homes match these filters.';}drawMarkers();}
 function unitTable(h){return h.units?'<div class="unit-table"><table><caption>Available 3-bedroom / 2-bath units (2026 dates)</caption><thead><tr><th>Unit</th><th>Sq ft</th><th>Available</th><th>Total / mo</th><th>Per person</th></tr></thead><tbody>'+h.units.map(u=>'<tr><td>'+u[0]+'</td><td>'+u[1]+'</td><td>'+u[2]+'</td><td>'+money(u[3])+'</td><td>'+money(u[3]/3)+'</td></tr>').join('')+'</tbody></table></div>':'';}
-function select(h){selected=h;history.replaceState(null,'','#'+h.id);$('mapname').textContent=h.address;$('details').innerHTML='<h2>'+h.address+'</h2><p class="muted">'+h.type+' · '+h.area+'</p><div class="facts"><strong>'+money(h.total)+' / month</strong><strong class="split">'+money(h.total/3)+' each / 3 people</strong><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span></div><p><strong>Available:</strong> '+h.available+' · <strong>Parking:</strong> '+h.parking+'</p><p class="note">'+h.condition+'. '+h.note+'</p><p>'+h.extras+'</p>'+unitTable(h)+'<div class="links"><a target="_blank" rel="noopener" href="'+h.url+'">Zillow listing & photos ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'">Directions ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'&destination=Little+Man+Ice+Cream+2620+16th+St+Denver&travelmode=walking">Walk to central LoHi ↗</a></div><small>Checked September 29, 2026. Costs exclude optional fees and any utilities not explicitly included; concessions are not deducted. Listings are updated manually. Map marks an approximate street address from the U.S. Census Geocoder, not a unit entrance.</small>';showMap();renderCards();}
+function select(h){selected=h;history.replaceState(null,'','#'+h.id);$('mapname').textContent=h.address;$('details').innerHTML='<h2>'+h.address+'</h2><p class="muted">'+h.type+' · '+h.area+'</p><div class="facts"><strong>'+money(h.total)+' / month</strong><strong class="split">'+money(h.total/3)+' each / 3 people</strong><span>'+h.beds+' beds · '+h.baths+' baths · '+h.sqft.toLocaleString()+' sq ft</span></div><p><strong>Available:</strong> '+h.available+' · <strong>Parking:</strong> '+h.parking+'</p><p class="note">'+h.condition+'. '+h.note+'</p><p>'+h.extras+'</p>'+unitTable(h)+'<div class="links"><a target="_blank" rel="noopener" href="'+h.url+'">'+(h.sourceName||'Zillow')+' listing & photos ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'">Directions ↗</a><a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent((h.mapAddress||h.address)+', Denver, CO')+'&destination=Little+Man+Ice+Cream+2620+16th+St+Denver&travelmode=walking">Walk to central LoHi ↗</a></div><small>Checked September 29, 2026. Costs exclude optional fees and any utilities not explicitly included; concessions are not deducted. Listings are updated manually. Map marks an approximate street address from the U.S. Census Geocoder, not a unit entrance.</small>';showMap();renderCards();}
 function refilter(){const list=filtered();if(list.length&&!list.some(h=>h.id===selected.id))select(list[0]);else renderCards();if(!list.length)$('details').textContent='No matching homes. Try another filter.';fitAll();} $('beds').onchange=refilter;$('type').onchange=refilter;$('sort').onchange=renderCards;$('property').onclick=()=>showMap(.003);$('neighborhood').onclick=fitAll;$('city').onclick=()=>showMap(.10);select(selected);fitAll();
 </script></body></html>
 
