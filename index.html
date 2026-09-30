@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Denver rental tracker</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#20324a;background:#f5f7fa;font:15px/1.5 system-ui,sans-serif}header{padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:1px solid #dce3eb;background:white}h1{font-size:23px;margin:0}header p{margin:2px 0 0;color:#607087;font-size:13px}a{color:#2259a4}main{display:grid;grid-template-columns:300px 1fr;height:calc(100dvh - 95px);min-height:470px}aside{padding:22px;background:white;overflow:auto}h2{font-size:19px;line-height:1.3;margin:0 0 6px}.muted{color:#607087}.price{font-size:28px;font-weight:700;margin:22px 0 0}.split{color:#245b45;margin:0 0 22px;font-weight:600}dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}dt{color:#607087}dd{margin:0;text-align:right}button,.linkbutton{padding:10px 14px;border:1px solid #c7d3e0;border-radius:7px;background:white;cursor:pointer;color:#243c5c;font:inherit}button:hover,.linkbutton:hover{background:#eef4fb}nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}.note{background:#fff6df;padding:12px;border-radius:7px;font-size:13px}.mapwrap{position:relative;min-width:0}#map{height:100%;width:100%;background:#e5ebed}.marker{background:#233d62;color:white;white-space:nowrap;padding:7px 12px;border:2px solid white;border-radius:20px;box-shadow:0 2px 10px #1d304040;font:600 13px system-ui;width:max-content}.leaflet-popup-content{font:14px/1.5 system-ui;min-width:210px}.leaflet-popup-content strong{font-size:16px}.small{font-size:12px;color:#68778b;margin-top:20px}#error{display:none;position:absolute;bottom:32px;left:20px;right:20px;background:white;padding:12px;z-index:1000;border:1px solid #c7d3e0;border-radius:8px}a:focus-visible,button:focus-visible{outline:3px solid #467dcc;outline-offset:3px}@media(max-width:700px){header{padding:12px 16px}h1{font-size:19px}header a{font-size:13px}main{height:auto;min-height:0;display:flex;flex-direction:column}.mapwrap{order:-1;height:56dvh;min-height:330px}aside{padding:18px}.price{margin-top:12px}dl{margin:14px 0}}
+</style></head><body>
+<header><div><h1>Denver rental tracker</h1><p>1 potential home · split between 3 people</p></div><a href="https://github.com/declanprewa-cpu/Rental-Tracker-Denver/edit/main/index.html" target="_blank" rel="noopener">Owner: edit tracker ↗</a></header>
+<main><aside><nav aria-label="Map views"><button id="property">Property</button><button id="neighborhood">Neighborhood</button><button id="city">Denver</button></nav>
+<h2>3444 Navajo St, Unit 5</h2><div class="muted">LoHi · Denver, CO 80211</div>
+<p class="price">$3,950<span style="font-size:14px;font-weight:400"> / month</span></p><p class="split">$1,316.67 per person</p>
+<dl><dt>Bedrooms listed</dt><dd>3</dd><dt>Bathrooms</dt><dd>2.5</dd><dt>Interior</dt><dd>1,952 sq ft</dd><dt>Available</dt><dd>Oct 15, 2026</dd><dt>Parking</dt><dd>2-car garage</dd></dl>
+<p class="note">The description specifies 2 full bedrooms plus an office / optional bedroom.</p>
+<p><a href="https://www.zillow.com/homedetails/3444-Navajo-St-UNIT-5-Denver-CO-80211/2092264306_zpid/" target="_blank" rel="noopener">View Zillow listing ↗</a></p>
+<p><a href="https://www.google.com/maps/search/?api=1&query=3444+Navajo+St+Denver+CO+80211" target="_blank" rel="noopener">Directions in Google Maps ↗</a></p>
+<p class="small">Rent split excludes utilities and optional fees. Listing captured September 29, 2026. Listing details are updated manually. Changes published by the owner appear here for everyone.</p>
+<p class="small">Approximate street-address location from the <a href="https://geocoding.geo.census.gov/geocoder/" target="_blank" rel="noopener">U.S. Census Geocoder</a>; not the entrance to Unit 5. Internet access is needed for the basemap.</p>
+</aside><section class="mapwrap" aria-label="Interactive rental location map"><iframe id="map" title="OpenStreetMap showing 3444 Navajo Street in Denver" style="border:0;display:block" src="https://www.openstreetmap.org/export/embed.html?bbox=-105.01906%2C39.75498%2C-104.98906%2C39.77498&amp;layer=mapnik&amp;marker=39.764981524099%2C-105.0040600894"></iframe></section></main>
+<script>
+const latitude=39.764981524099,longitude=-105.0040600894;
+function showArea(lonSpan,latSpan){
+ const params=new URLSearchParams({bbox:[longitude-lonSpan,latitude-latSpan,longitude+lonSpan,latitude+latSpan].join(','),layer:'mapnik',marker:[latitude,longitude].join(',')});
+ document.getElementById('map').src='https://www.openstreetmap.org/export/embed.html?'+params;
+}
+document.getElementById('property').onclick=()=>showArea(.003,.002);
+document.getElementById('neighborhood').onclick=()=>showArea(.015,.010);
+document.getElementById('city').onclick=()=>showArea(.10,.075);
+</script></body></html>
+
